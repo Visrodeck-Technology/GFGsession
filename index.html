@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ErrorBruh</title>
+<style>
+:root{--bg:#f6f7f9;--card:#fff;--ink:#1c2230;--mute:#6b7385;--line:#e1e5ec;--acc:#2f5bea;--accsoft:#e8eefd;--ok:#1d8a5b;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#12151c;--card:#1a1f2a;--ink:#e8ebf2;--mute:#8d96a8;--line:#2b3242;--acc:#7b9bff;--accsoft:#222b45;--ok:#4cc38a}}
+:root[data-theme="dark"]{--bg:#12151c;--card:#1a1f2a;--ink:#e8ebf2;--mute:#8d96a8;--line:#2b3242;--acc:#7b9bff;--accsoft:#222b45;--ok:#4cc38a}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 "Segoe UI",system-ui,-apple-system,Roboto,sans-serif}
+main{max-width:640px;margin:0 auto;padding:28px 16px 60px}
+h1{font-size:28px;margin:0;letter-spacing:-.5px}
+.tag{color:var(--mute);margin:2px 0 24px}
+section{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px;margin-bottom:14px}
+h2{font-size:16px;margin:0 0 10px}
+textarea,input{width:100%;font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:10px 12px}
+textarea{min-height:96px;resize:vertical;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:14px}
+textarea:focus,input:focus,button:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
+.lang{display:grid;grid-template-columns:1fr 150px;gap:14px;align-items:start}
+@media (max-width:520px){.lang{grid-template-columns:1fr}}
+.sugg{position:relative}
+.list{position:absolute;left:0;right:0;top:100%;margin-top:4px;background:var(--card);border:1px solid var(--line);border-radius:8px;max-height:180px;overflow:auto;z-index:5;display:none}
+.list button{display:block;width:100%;text-align:left;background:none;border:0;color:var(--ink);font:inherit;padding:8px 12px;cursor:pointer}
+.list button:hover{background:var(--accsoft)}
+.picked{margin-top:10px;color:var(--mute);font-size:14px}
+.picked b{color:var(--ink)}
+.wheel{position:relative;height:150px;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--bg)}
+.wheel::before{content:"";position:absolute;left:0;right:0;top:55px;height:40px;background:var(--accsoft);border-block:1px solid var(--acc);opacity:.7;pointer-events:none}
+.scroll{height:100%;overflow-y:scroll;scroll-snap-type:y mandatory;padding:55px 0;scrollbar-width:none;position:relative}
+.scroll::-webkit-scrollbar{display:none}
+.scroll div{height:40px;line-height:40px;text-align:center;scroll-snap-align:center;cursor:pointer;color:var(--mute);transition:transform .15s,opacity .15s,color .15s;opacity:.45;transform:scale(.85)}
+.scroll div.on{color:var(--ink);font-weight:600;opacity:1;transform:scale(1.05)}
+.modes{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.mode{text-align:left;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:14px;cursor:pointer;color:var(--ink);font:inherit;transition:border-color .15s,background .15s}
+.mode:hover{border-color:var(--acc)}
+.mode.sel{border-color:var(--acc);background:var(--accsoft)}
+.mode b{display:block}.mode span{color:var(--mute);font-size:14px}
+.go{margin-top:14px;width:100%;background:var(--acc);color:#fff;border:0;border-radius:8px;padding:12px;font:inherit;font-weight:600;cursor:pointer}
+:root[data-theme="dark"] .go,:root:not([data-theme="light"]) .go{color:#10141f}
+.go:disabled{opacity:.4;cursor:not-allowed}
+.res{display:none}
+.badge{display:inline-block;font-size:13px;padding:2px 10px;border-radius:99px;background:var(--accsoft);color:var(--acc);margin-bottom:8px}
+.sol p{margin:6px 0}
+pre{background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:10px;overflow-x:auto;font-size:13px;margin:8px 0}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.chip{background:var(--bg);border:1px solid var(--line);color:var(--ink);border-radius:99px;padding:6px 12px;font:inherit;font-size:14px;cursor:pointer}
+.chip:hover{border-color:var(--acc)}
+.qa{border-left:3px solid var(--acc);padding:2px 12px;margin-top:12px}
+.qa em{color:var(--mute);font-style:normal;font-size:14px}
+.load{color:var(--mute)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+main{position:relative;z-index:1}
+.bg{position:fixed;inset:0;overflow:hidden;pointer-events:none;z-index:0}
+.bg span{position:absolute;font:700 clamp(70px,14vw,150px)/1 ui-monospace,Menlo,Consolas,monospace;color:var(--acc);opacity:.08;will-change:transform}
+h1{min-height:36px;cursor:default}
+.ex{margin-top:8px;font-size:14px;color:var(--mute);display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.ex button{background:none;border:1px solid var(--line);color:var(--ink);border-radius:99px;padding:3px 10px;font:inherit;font-size:13px;cursor:pointer}
+.ex button:hover{border-color:var(--acc)}
+.bar{height:6px;background:var(--line);border-radius:9px;overflow:hidden}
+#barfill{display:block;height:100%;width:0;background:var(--acc)}
+.mono{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:14px;color:var(--mute)}
+.det{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px}
+.det span{border:1px solid var(--line);border-radius:6px;padding:2px 8px;font-size:13px;background:var(--bg)}
+.codewrap{position:relative}
+.cp{position:absolute;top:14px;right:8px;background:var(--card);border:1px solid var(--line);color:var(--ink);border-radius:6px;padding:2px 10px;font:inherit;font-size:12px;cursor:pointer}
+footer{position:relative;z-index:1;max-width:640px;margin:0 auto;padding:22px 16px calc(28px + env(safe-area-inset-bottom,0px));border-top:1px solid var(--line);display:grid;grid-template-columns:1fr auto;gap:12px 24px;font-size:14px;color:var(--mute)}
+footer b{color:var(--ink);font-size:16px;cursor:default}
+footer p{margin:4px 0 0}
+footer nav{display:flex;gap:14px;align-items:start;flex-wrap:wrap}
+footer button{background:none;border:0;padding:0;font:inherit;color:var(--mute);cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+footer button:hover{color:var(--acc)}
+footer small{grid-column:1/-1;font-size:13px}
+@media (max-width:520px){footer{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="bg" aria-hidden="true"><span data-d="90" style="left:4%;top:12%">{ }</span><span data-d="-60" style="right:6%;top:22%">404</span><span data-d="130" style="left:10%;top:62%">!</span><span data-d="-100" style="right:12%;top:70%">null</span><span data-d="50" style="left:46%;top:88%">&lt;/&gt;</span></div>
+<main>
+  <h1 id="title">ErrorBruh</h1>
+  <p class="tag">Paste your error. Pick your language. Get unstuck.</p>
+
+  <section>
+    <h2>1. What's the error?</h2>
+    <textarea id="err" placeholder="e.g. TypeError: Cannot read properties of undefined (reading 'map')"></textarea>
+    <div class="ex">Try an example: <button data-k="js">JavaScript</button><button data-k="py">Python</button><button data-k="java">Java</button><span>· Ctrl+Enter to solve</span></div>
+  </section>
+
+  <section>
+    <h2>2. Which language?</h2>
+    <div class="lang">
+      <div>
+        <div class="sugg">
+          <input id="q" placeholder="Type a language name…" autocomplete="off" aria-label="Search language">
+          <div class="list" id="list"></div>
+        </div>
+        <div class="picked">Selected: <b id="picked">JavaScript</b></div>
+        <div class="picked" id="hint"></div>
+        <div class="picked">Or spin the dial →</div>
+      </div>
+      <div class="wheel" aria-label="Language dial"><div class="scroll" id="wheel"></div></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>3. How should we answer?</h2>
+    <div class="modes">
+      <button class="mode" data-m="rule"><b>Rule-based</b><span>Fast, offline, known patterns</span></button>
+      <button class="mode" data-m="ai"><b>Use AI</b><span>Handles odd or unusual errors</span></button>
+    </div>
+    <button class="go" id="go" disabled>Solve it</button>
+  </section>
+
+  <section class="res" id="res">
+    <h2>Solution</h2>
+    <div class="sol" id="sol"></div>
+    <h2 style="margin-top:16px">Follow-up questions</h2>
+    <div class="chips" id="chips"></div>
+    <div id="qas"></div>
+  </section>
+</main>
+<footer>
+  <div><b id="fbrand">ErrorBruh</b><p>Paste an error, get a fix. Built for people who read stack traces at 2 a.m.</p></div>
+  <nav aria-label="Footer">
+    <button id="totop">Back to top</button>
+    <button id="again">Analyze another error</button>
+  </nav>
+  <small>Suggested fixes are starting points. Test them before shipping. © 2026 ErrorBruh</small>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.2/anime.min.js"></script>
+<script>
+const LANGS=["JavaScript","TypeScript","Python","Java","C","C++","C#","Go","Rust","PHP","Ruby","Swift","Kotlin","SQL"];
+let lang="JavaScript",mode=null;
+const $=id=>document.getElementById(id);
+const wheel=$("wheel"),list=$("list"),q=$("q");
+
+// dial
+LANGS.forEach((l,i)=>{const d=document.createElement("div");d.textContent=l;d.onclick=()=>setLang(l,true);wheel.appendChild(d)});
+function mark(){[...wheel.children].forEach(c=>c.classList.toggle("on",c.textContent===lang))}
+function setLang(l,scroll){lang=l;$("picked").textContent=l;mark();if(scroll){wheel.scrollTo({top:LANGS.indexOf(l)*40,behavior:"smooth"})}}
+let t;wheel.addEventListener("scroll",()=>{clearTimeout(t);t=setTimeout(()=>{const l=LANGS[Math.min(LANGS.length-1,Math.max(0,Math.round(wheel.scrollTop/40)))];lang=l;$("picked").textContent=l;mark()},60)});
+setLang("JavaScript",false);mark();
+
+// search suggestions
+q.addEventListener("input",()=>{
+  const v=q.value.trim().toLowerCase();list.innerHTML="";
+  if(!v){list.style.display="none";return}
+  const m=LANGS.filter(l=>l.toLowerCase().includes(v));
+  m.forEach(l=>{const b=document.createElement("button");b.textContent=l;b.onclick=()=>{setLang(l,true);q.value=l;list.style.display="none"};list.appendChild(b)});
+  if(!m.length){list.innerHTML='<button disabled>No match</button>'}
+  list.style.display="block";
+});
+document.addEventListener("click",e=>{if(!e.target.closest(".sugg"))list.style.display="none"});
+
+// mode
+document.querySelectorAll(".mode").forEach(b=>b.onclick=()=>{
+  mode=b.dataset.m;document.querySelectorAll(".mode").forEach(x=>x.classList.toggle("sel",x===b));check()});
+$("err").addEventListener("input",check);
+function check(){$("go").disabled=!($("err").value.trim()&&mode)}
+
+// rules: pattern, title, explanation, fix (code), followups [q,a]
+const RULES=[
+ {re:/cannot read propert|undefined is not|of undefined|of null/i,langs:["JavaScript","TypeScript"],
+  t:"Accessing a property on undefined/null",e:"You're reading a property on a value that hasn't been set yet, often data that hasn't loaded or a wrong variable name.",
+  c:"const items = data?.items ?? [];\nitems.map(i => i.name);",
+  f:[["How do I find which variable is undefined?","Read the property name in the message, then console.log the object just before that line. The one printing undefined is your culprit."],["Why is it undefined only sometimes?","Usually async data. Render only after the data arrives, or give it a safe default like an empty array."]]},
+ {re:/modulenotfounderror|no module named|cannot find module|importerror/i,langs:["Python","JavaScript","TypeScript"],
+  t:"Missing module or package",e:"The module you import isn't installed, or isn't visible to the interpreter or project you're running.",
+  c:"# Python\npip install <package>\n# Node\nnpm install <package>",
+  f:[["I installed it but it still fails. Why?","You probably installed into a different environment. Check that pip or npm runs from the same venv or project folder as your code."],["Could the import name differ from the package name?","Yes. For example, you install 'Pillow' but import 'PIL'. Check the package docs."]]},
+ {re:/indexerror|out of range|arrayindexoutofbounds|index out of/i,langs:["Python","Java","C#","Go","Rust","Kotlin"],
+  t:"Index out of range",e:"You asked for an item at a position beyond the end of the list. Lists start at 0, so the last valid index is length - 1.",
+  c:"if i < len(items):\n    print(items[i])",
+  f:[["Why does my loop go one step too far?","Off-by-one: use < length, not <= length, as the loop condition."],["What if the list is empty?","Check for emptiness first, since even index 0 is invalid then."]]},
+ {re:/nullpointer|nil pointer|null reference|segmentation fault|segfault/i,langs:["Java","C#","Go","C","C++","Kotlin"],
+  t:"Null or invalid pointer",e:"Your code is using something that points to nothing, either never assigned or already freed.",
+  c:"if (obj != null) {\n    obj.run();\n}",
+  f:[["How do I find where it became null?","Read the stack trace top-down to the first line of your own code, then trace where that variable is assigned."],["How do I prevent it long-term?","Initialize values at declaration and prefer optional types where your language has them."]]},
+ {re:/syntaxerror|unexpected token|parse error|expected ';'|invalid syntax/i,langs:null,
+  t:"Syntax error",e:"The parser hit something it didn't expect. The real mistake is usually on the line above the reported one: a missing bracket, quote, comma or colon.",
+  c:"// Check for:\n// ( ) { } [ ] \" '  unmatched\n// missing , or : or ;",
+  f:[["The line it points to looks fine. Why?","Parsers report where they gave up, not where you slipped. Look at the previous line or block."],["Any tool to catch these earlier?","Use a linter and formatter in your editor so mismatches show up as you type."]]},
+ {re:/typeerror|cannot convert|not callable|unsupported operand|mismatched types/i,langs:null,
+  t:"Type mismatch",e:"An operation got a value of a type it can't work with, like adding a number to text or calling something that isn't a function.",
+  c:"const n = Number(input);\nresult = n + 5;",
+  f:[["How do I see the type of a value?","Log it with typeof (JS), type() (Python) or your debugger."],["Is there a way to avoid these?","Add type hints or use TypeScript, which flags them before you run."]]}
+];
+const FALLBACK={t:"No exact match found",e:"We couldn't match a known pattern. Isolate the failing line from the stack trace and search the exact message in quotes. Switching to AI mode may help here.",c:"// Minimal steps\n// 1. Read the first line of the trace in YOUR code\n// 2. Log the values used on that line\n// 3. Reduce the code until the error remains",
+ f:[["How do I read a stack trace?","Start at the top for the error type and message, then find the first file path that belongs to your project."],["What should I include when asking for help?","The full error text, the language and version, and the smallest code that reproduces it."]]};
+
+function esc(s){return s.replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]))}
+
+// AI hook: replace body with a real call to your backend
+async function askAI(error,language){
+  await new Promise(r=>setTimeout(r,1200));
+  return {t:"AI analysis ("+language+")",e:"Based on your message, the likely cause is a value that is missing or has the wrong type at the line named in the trace. Verify the inputs just before that line.",
+   c:"// Connect your own AI endpoint inside askAI()\n// to replace this placeholder answer.",
+   f:[["Can you explain this in simpler words?","The program expected one thing and got another. Find the exact line, print the values, and compare them with what you expected."],["What else could cause this?","Stale dependencies, wrong versions, or code that runs before its data is ready."]]};
+}
+
+let cur=null,busy=false;
+const RM=matchMedia("(prefers-reduced-motion:reduce)").matches;
+const GL="!<>-_\\/[]{}=+*^?#";
+function scramble(el,text,dur=700){
+  if(RM){el.textContent=text;return Promise.resolve()}
+  return anime({targets:{p:0},p:1,duration:dur,easing:"linear",
+    update:a=>{const p=a.progress/100;el.textContent=[...text].map((c,i)=>c===" "||i<text.length*p?c:GL[Math.random()*GL.length|0]).join("")},
+    complete:()=>{el.textContent=text}}).finished;
+}
+
+// parallax background
+const sh=[...document.querySelectorAll(".bg span")];let mx=0,my=0;
+function px(){const sy=scrollY;sh.forEach(s=>{const d=+s.dataset.d;s.style.transform=`translate(${mx*d}px,${my*d-sy*d/300}px) rotate(${mx*d/6}deg)`})}
+if(!RM){
+  addEventListener("mousemove",e=>{mx=e.clientX/innerWidth-.5;my=e.clientY/innerHeight-.5;px()});
+  addEventListener("scroll",px,{passive:true});
+  anime({targets:".bg span",opacity:[.05,.15],direction:"alternate",loop:true,delay:anime.stagger(500),duration:3000,easing:"easeInOutSine"});
+  anime({targets:"main > section:not(.res)",opacity:[0,1],translateY:[28,0],delay:anime.stagger(120,{start:300}),duration:700,easing:"easeOutCubic"});
+}
+const T=$("title");scramble(T,"ErrorBruh",900);T.addEventListener("mouseenter",()=>scramble(T,"ErrorBruh",500));
+
+// examples
+const EX={js:"TypeError: Cannot read properties of undefined (reading 'map')\n    at App (app.js:12:18)",
+ py:"Traceback (most recent call last):\n  File \"main.py\", line 4, in <module>\nIndexError: list index out of range",
+ java:"Exception in thread \"main\" java.lang.NullPointerException\n    at Main.main(Main.java:7)"};
+document.querySelectorAll(".ex button").forEach(b=>b.onclick=()=>{
+  $("err").value=EX[b.dataset.k];$("err").dispatchEvent(new Event("input"));
+  if(!RM)anime({targets:"#err",scale:[.98,1],duration:350,easing:"easeOutBack"})});
+
+// language auto-detect
+const GUESS=[[/traceback|indentationerror|nameerror|modulenotfound/i,"Python"],[/exception in thread|\.java:\d+|nullpointerexception/i,"Java"],[/panic:|goroutine/i,"Go"],[/panicked at|error\[E\d+\]/i,"Rust"],[/segmentation fault|undefined reference/i,"C"],[/\bTS\d{4}\b|is not assignable to type/i,"TypeScript"],[/system\.\w+exception|\.cs:line/i,"C#"],[/sqlstate|syntax error at or near/i,"SQL"],[/uncaught|cannot read propert|referenceerror|is not defined/i,"JavaScript"]];
+let gt;$("err").addEventListener("input",()=>{clearTimeout(gt);gt=setTimeout(()=>{
+  const g=GUESS.find(x=>x[0].test($("err").value));
+  if(g){if(g[1]!==lang)setLang(g[1],true);$("hint").textContent="Auto-detected "+g[1]+". Change it if that's wrong."}else $("hint").textContent=""},350)});
+$("err").addEventListener("keydown",e=>{if(e.key==="Enter"&&(e.ctrlKey||e.metaKey)&&!$("go").disabled)$("go").click()});
+document.querySelectorAll(".mode").forEach(b=>b.addEventListener("click",()=>{
+  if(!RM)anime({targets:b,scale:[.95,1],duration:450,easing:"easeOutElastic(1,.6)"})}));
+
+// analyze + reveal
+$("go").onclick=async()=>{
+  if(busy)return;busy=true;$("go").disabled=true;
+  const err=$("err").value.trim();
+  $("res").style.display="block";$("qas").innerHTML="";$("chips").innerHTML="";
+  $("sol").innerHTML='<div class="bar"><i id="barfill"></i></div><p class="mono" id="anline"></p>';
+  $("res").scrollIntoView({behavior:"smooth",block:"start"});
+  const job=mode==="rule"?Promise.resolve(RULES.find(x=>x.re.test(err)&&(!x.langs||x.langs.includes(lang)))||FALLBACK):askAI(err,lang);
+  const steps=["Reading your error…","Spotting "+lang+" patterns…",mode==="rule"?"Matching known causes…":"Asking the AI…","Drafting a fix…"];
+  for(let i=0;i<steps.length;i++){
+    scramble($("anline"),steps[i],380);
+    await anime({targets:"#barfill",width:((i+1)/steps.length*100)+"%",duration:480,easing:"easeOutQuad"}).finished;
+  }
+  const r=await job;cur=r;
+  const ty=(err.match(/\b[\w.]*(?:Error|Exception)\b/)||[])[0];
+  const ln=(err.match(/line (\d+)/i)||err.match(/:(\d+)(?::\d+)?\)?/)||[])[1];
+  const det=[["Language",lang],ty&&["Type",ty],ln&&["Line",ln]].filter(Boolean);
+  $("sol").innerHTML='<div class="det">'+det.map(d=>`<span><b>${esc(d[0])}:</b> ${esc(d[1])}</span>`).join("")+`</div><span class="badge">${mode==="rule"?"Rule-based":"AI"}</span><p><b id="rt"></b></p><p id="re"></p><div class="codewrap"><button class="cp" id="cp">Copy</button><pre>${esc(r.c)}</pre></div>`;
+  if(!RM)anime({targets:"#sol > *",opacity:[0,1],translateY:[14,0],delay:anime.stagger(100),duration:500,easing:"easeOutCubic"});
+  scramble($("rt"),r.t,700);scramble($("re"),r.e,1100);
+  $("cp").onclick=async()=>{try{await navigator.clipboard.writeText(r.c);$("cp").textContent="Copied!"}catch(e){$("cp").textContent="Press Ctrl+C"}setTimeout(()=>$("cp").textContent="Copy",1500)};
+  r.f.forEach(([qq,a])=>{const b=document.createElement("button");b.className="chip";b.textContent=qq;b.onclick=()=>{
+    const d=document.createElement("div");d.className="qa";d.innerHTML=`<em>${esc(qq)}</em><p></p>`;$("qas").appendChild(d);b.remove();
+    scramble(d.querySelector("p"),a,700);d.scrollIntoView({behavior:"smooth",block:"nearest"})};$("chips").appendChild(b)});
+  if(!RM)anime({targets:".chip",opacity:[0,1],scale:[.85,1],delay:anime.stagger(80,{start:500}),duration:400});
+  busy=false;check();
+};
+
+$("totop").onclick=()=>scrollTo({top:0,behavior:RM?"auto":"smooth"});
+$("again").onclick=()=>{$("err").value="";$("res").style.display="none";check();$("hint").textContent="";scrollTo({top:0,behavior:RM?"auto":"smooth"});$("err").focus({preventScroll:true})};
+$("fbrand").addEventListener("mouseenter",()=>scramble($("fbrand"),"ErrorBruh",500));
+</script>
+</body>
+</html>
