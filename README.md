@@ -1,4 +1,6 @@
 # ErrorBruh
+// This repo was for a certain workshop and is not maintained //
+
 
 A small Flask-backed error explainer. Paste a compiler/runtime message, choose its language, and get a plain-language explanation, likely cause, and suggested next step.
 
